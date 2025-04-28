@@ -1,21 +1,19 @@
-import logo from './logo.svg';
+import logo from './tazadeCafe.png';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={taza de cafe nueva.png} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <img src={logo} className="App-logo" alt="logo" />
+        <p><strong>“A quien madruga, un buen café le ayuda”</strong></p>
         <a
           className="App-link"
-          href="https://www.instagram.com/colibricafehmo/?hl=es"
+          href="https://noro.mx/hermosillo/7-cafes-en-hermosillo-para-hacer-home-office/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Más información
         </a>
       </header>
     </div>

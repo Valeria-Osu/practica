@@ -1,50 +1,17 @@
 import React, { useEffect, useState } from "react";
 import cafeteriasData from "../data/cafeterias.json";
-import "./CafeteriasList.css";
 import { Link } from "react-router-dom";
 
-const CafeteriasList = ({ filtros }) => {
+const CafeteriasList = ({ searchQuery }) => {
   const [cafeterias, setCafeterias] = useState([]);
 
   useEffect(() => {
     setCafeterias(cafeteriasData);
   }, []);
 
-  const filtrarCafeterias = () => {
-    return cafeterias.filter((cafeteria) => {
-      // Filtrar por ciudad (usando "direccion")
-      if (
-        filtros?.ciudad &&
-        !cafeteria.direccion.toLowerCase().includes(filtros.ciudad.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Filtro por múltiples servicios
-      if (
-        filtros?.servicios?.length > 0 &&
-        !filtros.servicios.every((filtro) =>
-          cafeteria.servicios.map(s => s.toLowerCase()).includes(filtro.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
-      // Filtrar por menú (si llegas a incluir el campo en el JSON)
-      if (
-        filtros?.menu &&
-        !(cafeteria.menu || []).some((item) =>
-          item.toLowerCase().includes(filtros.menu.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-  };
-
-  const cafeteriasFiltradas = filtros ? filtrarCafeterias() : cafeterias;
+  const cafeteriasFiltradas = cafeterias.filter((cafeteria) => {
+    return cafeteria.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="contenedor">

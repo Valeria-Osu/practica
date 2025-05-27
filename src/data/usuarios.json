@@ -1,0 +1,12 @@
+[
+  {
+    "correo": "admin@cafeterias.com",
+    "contraseña": "admin123",
+    "rol": "admin"
+  },
+  {
+    "correo": "usuario@cafeterias.com",
+    "contraseña": "usuario123",
+    "rol": "usuario"
+  }
+]

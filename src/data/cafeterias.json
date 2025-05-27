@@ -2,25 +2,52 @@
   {
     "id": 1,
     "nombre": "Parist-Brest",
-    "descripcion": "",
-    "direccion": "",
-    "servicios": ["", "", ""],
-    "imagen": ""
+    "descripcion": "Panadería y cafetería con estilo francés, famosa por sus postres artesanales.",
+    "direccion": "Av. Libertad 123, Ciudad Central",
+    "servicios": ["Wi-Fi", "Reservaciones", "Postres veganos"],
+    "menu": [
+      { "nombre": "Croissant de mantequilla", "precio": 35.50 },
+      { "nombre": "Café espresso", "precio": 25.00 },
+      { "nombre": "Tarta de limón", "precio": 40.00 }
+    ],
+    "imagen": "/imagenes/parist-brest.jpg",
+    "resenas": [
+      { "usuario": "Laura", "puntuacion": 5, "comentario": "Un ambiente muy acogedor y el croissant es delicioso." },
+      { "usuario": "Miguel", "puntuacion": 4, "comentario": "Buen café y atención amable." }
+    ]
   },
   {
     "id": 2,
     "nombre": "Bendita Patria Café",
-    "descripcion": "",
-    "direccion": "",
-    "servicios": ["", "", ""],
-    "imagen": ""
+    "descripcion": "Café de especialidad con sabores tradicionales y ambiente bohemio.",
+    "direccion": "Calle 5 de Mayo 45, Centro Histórico",
+    "servicios": ["Wi-Fi", "Zona para lectura", "Música en vivo"],
+    "menu": [
+      { "nombre": "Capuccino", "precio": 40.00 },
+      { "nombre": "Pan dulce", "precio": 30.00 },
+      { "nombre": "Mocaccino", "precio": 45.00 }
+    ],
+    "imagen": "/imagenes/bendita-patria.jpg",
+    "resenas": [
+      { "usuario": "Sofía", "puntuacion": 5, "comentario": "Excelente café y música en vivo los fines de semana." },
+      { "usuario": "Javier", "puntuacion": 3, "comentario": "El café es bueno pero el lugar a veces está muy lleno." }
+    ]
   },
   {
     "id": 3,
     "nombre": "Mona",
-    "descripcion": "",
-    "direccion": "",
-    "servicios": ["", "", ""],
-    "imagen": ""
+    "descripcion": "Cafetería boutique con enfoque en cafés orgánicos y postres artesanales.",
+    "direccion": "Av. Reforma 78, Barrio Jardín",
+    "servicios": ["Wi-Fi", "Pet friendly", "Terraza"],
+    "menu": [
+      { "nombre": "Latte", "precio": 45.00 },
+      { "nombre": "Cheesecake de frutos rojos", "precio": 50.00 },
+      { "nombre": "Espresso doble", "precio": 30.00 }
+    ],
+    "imagen": "/imagenes/mona.jpg",
+    "resenas": [
+      { "usuario": "Ana", "puntuacion": 5, "comentario": "Perfecto para trabajar y disfrutar un café de calidad." },
+      { "usuario": "Carlos", "puntuacion": 4, "comentario": "Muy buen ambiente y postres ricos." }
+    ]
   }
 ]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "cafeteriaId": 1,
+    "usuario": "carlos.ramos",
+    "comentario": "Muy buena atención.",
+    "puntuacion": 4,
+    "fecha": "2025-05-26T09:00:00Z"
+  },
+  {
+    "id": 2,
+    "cafeteriaId": 2,
+    "usuario": "ana.moreno",
+    "comentario": "El pan dulce es delicioso.",
+    "puntuacion": 5,
+    "fecha": "2025-05-26T11:20:00Z"
+  }
+]

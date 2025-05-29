@@ -1,41 +1,57 @@
-import React, { useEffect, useState } from "react";
-import cafeteriasData from "../data/cafeterias.json";
-import { Link } from "react-router-dom";
+import React from "react";
 
-const CafeteriasList = ({ searchQuery }) => {
-  const [cafeterias, setCafeterias] = useState([]);
+const CafeteriasList = ({
+  cafeterias,
+  searchQuery,
+  itemsPerPage,
+  currentPage,
+  handlePageChange,
+}) => {
+  // Filtrar cafeterías por búsqueda
+  const filteredCafeterias = cafeterias.filter((cafeteria) =>
+    cafeteria.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  useEffect(() => {
-    setCafeterias(cafeteriasData);
-  }, []);
+  // Calcular las cafeterías a mostrar para la página actual
+  const indexOfLastCafeteria = currentPage * itemsPerPage;
+  const indexOfFirstCafeteria = indexOfLastCafeteria - itemsPerPage;
+  const currentCafeterias = filteredCafeterias.slice(indexOfFirstCafeteria, indexOfLastCafeteria);
 
-  const cafeteriasFiltradas = cafeterias.filter((cafeteria) => {
-    return cafeteria.nombre.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  // Número total de páginas
+  const totalPages = Math.ceil(filteredCafeterias.length / itemsPerPage);
 
   return (
-    <div className="contenedor">
-      <h1>Catálogo de Cafeterías</h1>
-      {cafeteriasFiltradas.length === 0 ? (
-        <p>No se encontraron cafeterías con los filtros aplicados.</p>
-      ) : (
-        <div className="grid">
-          {cafeteriasFiltradas.map((cafeteria) => (
-            <div key={cafeteria.id} className="tarjeta">
-              {cafeteria.imagen && (
-                <img src={cafeteria.imagen} alt={cafeteria.nombre} />
-              )}
+    <div>
+      <div className="cafeteria-list">
+        {currentCafeterias.length > 0 ? (
+          currentCafeterias.map((cafeteria, index) => (
+            <div key={index} className="cafeteria-card">
+              <img src={cafeteria.imagen} alt={cafeteria.nombre} />
               <h3>{cafeteria.nombre}</h3>
-              <p>{cafeteria.descripcion || "Sin descripción disponible"}</p>
-              <p><strong>Dirección:</strong> {cafeteria.direccion || "No especificada"}</p>
-              <p><strong>Servicios:</strong> {cafeteria.servicios.filter(Boolean).join(", ") || "No disponibles"}</p>
-              <Link to={`/cafeteria/${cafeteria.id}`}>
-                <button>Ver detalles</button>
-              </Link>
+              <p>{cafeteria.descripcion}</p>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <p>No se encontraron cafeterías con los filtros aplicados.</p>
+        )}
+      </div>
+
+      {/* Paginación */}
+      <div className="pagination">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          ← Anterior
+        </button>
+        <span>{`Página ${currentPage} de ${totalPages}`}</span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Siguiente →
+        </button>
+      </div>
     </div>
   );
 };

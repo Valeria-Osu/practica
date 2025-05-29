@@ -1,12 +1,10 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import cafeteriasData from "../data/cafeterias.json";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import cafeteriasData from "../data/cafeterias.json"; // Si estás usando datos locales, si no, conecta con la API
+import "./CafeteriasAdmin.css";
 
 const CafeteriasAdmin = () => {
-  const { user } = useContext(AuthContext);
-
-  const [cafeterias, setCafeterias] = useState(cafeteriasData);
+  const [cafeterias, setCafeterias] = useState(cafeteriasData); // Usar datos locales para pruebas
   const [editando, setEditando] = useState(null);
   const [nuevaCafeteria, setNuevaCafeteria] = useState({
     nombre: "",
@@ -14,49 +12,107 @@ const CafeteriasAdmin = () => {
     descripcion: "",
     imagen: "",
   });
+  const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
 
-  if (!user || user.rol !== "admin") {
-    return <p style={{ padding: "2rem" }}>Acceso denegado. Solo administradores pueden gestionar cafeterías.</p>;
-  }
+  // Obtener el usuario del localStorage
+  const user = JSON.parse(localStorage.getItem("usuario"));
 
+  // Verificar si el usuario es administrador
+  useEffect(() => {
+    if (!user || user.rol !== "admin") {
+      navigate("/"); // Si no es administrador, redirigir al inicio
+    }
+  }, [navigate, user]);
+
+  // Función para manejar cambios en los campos del formulario
   const handleChange = (e) => {
     setNuevaCafeteria({ ...nuevaCafeteria, [e.target.name]: e.target.value });
   };
 
-  const handleAgregar = () => {
-    const nueva = {
-      id: cafeterias.length + 1,
-      ...nuevaCafeteria,
-      menu: [],
-      reseñas: [],
-    };
-    setCafeterias([...cafeterias, nueva]);
-    setNuevaCafeteria({ nombre: "", direccion: "", descripcion: "", imagen: "" });
+  // Función para agregar una cafetería
+  const handleAgregar = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/cafeterias", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(nuevaCafeteria),
+      });
+
+      const data = await response.json();
+      if (response.status === 200) {
+        setCafeterias([...cafeterias, data.cafeteria]); // Agregar nueva cafetería a la lista
+        setNuevaCafeteria({ nombre: "", direccion: "", descripcion: "", imagen: "" });
+        setMensaje("Cafetería agregada correctamente.");
+      } else {
+        setMensaje(data.message || "Error al agregar cafetería.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al agregar la cafetería.");
+    }
   };
 
+  // Función para editar una cafetería
   const handleEditar = (index) => {
     setEditando(index);
     setNuevaCafeteria({ ...cafeterias[index] });
   };
 
-  const handleGuardar = () => {
-    const actualizadas = [...cafeterias];
-    actualizadas[editando] = nuevaCafeteria;
-    setCafeterias(actualizadas);
-    setEditando(null);
-    setNuevaCafeteria({ nombre: "", direccion: "", descripcion: "", imagen: "" });
+  // Función para guardar cambios en una cafetería
+  const handleGuardar = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/cafeterias/${cafeterias[editando].id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(nuevaCafeteria),
+      });
+
+      const data = await response.json();
+      if (response.status === 200) {
+        const actualizadas = [...cafeterias];
+        actualizadas[editando] = nuevaCafeteria;
+        setCafeterias(actualizadas);
+        setEditando(null);
+        setNuevaCafeteria({ nombre: "", direccion: "", descripcion: "", imagen: "" });
+        setMensaje("Cafetería actualizada correctamente.");
+      } else {
+        setMensaje(data.message || "Error al actualizar la cafetería.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al actualizar la cafetería.");
+    }
   };
 
-  const handleEliminar = (index) => {
+  // Función para eliminar una cafetería
+  const handleEliminar = async (index) => {
     if (!window.confirm("¿Seguro que deseas eliminar esta cafetería?")) return;
-    const actualizadas = [...cafeterias];
-    actualizadas.splice(index, 1);
-    setCafeterias(actualizadas);
+
+    try {
+      const response = await fetch(`http://localhost:5000/cafeterias/${cafeterias[index].id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+      if (response.status === 200) {
+        const actualizadas = cafeterias.filter((_, i) => i !== index);
+        setCafeterias(actualizadas);
+        setMensaje("Cafetería eliminada correctamente.");
+      } else {
+        setMensaje(data.message || "Error al eliminar la cafetería.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al eliminar la cafetería.");
+    }
   };
 
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "auto", fontFamily: "sans-serif" }}>
       <h2>Gestión de Cafeterías</h2>
+      {mensaje && <p>{mensaje}</p>}
 
       <ul>
         {cafeterias.map((cafe, index) => (

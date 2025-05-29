@@ -1,33 +1,90 @@
-import React, { useState, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
-import cafeteriasData from "../data/cafeterias.json";
-import { AuthContext } from "../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+
+// Asume que las cafeterías y el menú se obtienen de una API backend
+import "../styles/styles.css";
 
 const MenuGestion = () => {
   const { id } = useParams();
-  const cafeteria = cafeteriasData.find(c => c.id === parseInt(id));
-  const { user } = useContext(AuthContext);
-
-  const [menu, setMenu] = useState(cafeteria ? cafeteria.menu : []);
+  const navigate = useNavigate();
+  const [cafeteria, setCafeteria] = useState(null); // Almacenará los datos de la cafetería
+  const [menu, setMenu] = useState([]);
   const [nuevoProducto, setNuevoProducto] = useState({ nombre: "", precio: "" });
   const [editandoIndex, setEditandoIndex] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  if (!cafeteria) return <p>Cafetería no encontrada</p>;
+  // Obtener el token de autenticación desde localStorage
+  const token = localStorage.getItem("token");
 
-  // ✅ Restricción solo para admins
-  if (!user || user.rol !== "admin") {
-    return <p style={{ padding: "2rem" }}>Acceso denegado. Solo administradores pueden gestionar el menú.</p>;
+  useEffect(() => {
+    if (!token) {
+      navigate("/login"); // Redirigir al login si no hay token
+    }
+
+    // Obtener la cafetería y el menú desde la API
+    const fetchCafeteria = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/cafeterias/${id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`, // Pasar el token en la cabecera
+          }
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setCafeteria(data.cafeteria);
+          setMenu(data.cafeteria.menu);
+        } else {
+          setMensaje("Error al obtener los datos de la cafetería.");
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al obtener la cafetería:", error);
+        setMensaje("Hubo un error al obtener la cafetería.");
+        setLoading(false);
+      }
+    };
+
+    fetchCafeteria();
+  }, [id, navigate, token]);
+
+  if (loading) {
+    return <p>Cargando...</p>;
+  }
+
+  if (!cafeteria) {
+    return <p>Cafetería no encontrada</p>;
   }
 
   const handleInputChange = (e) => {
     setNuevoProducto({ ...nuevoProducto, [e.target.name]: e.target.value });
   };
 
-  const handleAgregar = (e) => {
+  const handleAgregar = async (e) => {
     e.preventDefault();
     if (!nuevoProducto.nombre || !nuevoProducto.precio) return;
-    setMenu([...menu, { ...nuevoProducto, precio: parseFloat(nuevoProducto.precio) }]);
-    setNuevoProducto({ nombre: "", precio: "" });
+
+    try {
+      const response = await fetch(`http://localhost:5000/cafeterias/${id}/menu`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(nuevoProducto),
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        setMenu([...menu, data.nuevoProducto]);
+        setNuevoProducto({ nombre: "", precio: "" });
+        setMensaje("Producto agregado correctamente.");
+      } else {
+        setMensaje(data.message || "Error al agregar el producto.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al agregar el producto.");
+    }
   };
 
   const handleEditar = (index) => {
@@ -35,24 +92,65 @@ const MenuGestion = () => {
     setEditandoIndex(index);
   };
 
-  const handleGuardarEdicion = (e) => {
+  const handleGuardarEdicion = async (e) => {
     e.preventDefault();
-    const actualizado = [...menu];
-    actualizado[editandoIndex] = { ...nuevoProducto, precio: parseFloat(nuevoProducto.precio) };
-    setMenu(actualizado);
-    setNuevoProducto({ nombre: "", precio: "" });
-    setEditandoIndex(null);
+    const actualizado = { ...nuevoProducto, precio: parseFloat(nuevoProducto.precio) };
+
+    try {
+      const response = await fetch(`http://localhost:5000/cafeterias/${id}/menu/${menu[editandoIndex].id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(actualizado),
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        const actualizadas = [...menu];
+        actualizadas[editandoIndex] = data.productoActualizado;
+        setMenu(actualizadas);
+        setNuevoProducto({ nombre: "", precio: "" });
+        setEditandoIndex(null);
+        setMensaje("Producto actualizado correctamente.");
+      } else {
+        setMensaje(data.message || "Error al actualizar el producto.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al actualizar el producto.");
+    }
   };
 
-  const handleEliminar = (index) => {
-    const actualizado = [...menu];
-    actualizado.splice(index, 1);
-    setMenu(actualizado);
+  const handleEliminar = async (index) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este producto?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/cafeteria/${id}/menu/${menu[index].id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        const actualizado = [...menu];
+        actualizado.splice(index, 1);
+        setMenu(actualizado);
+        setMensaje("Producto eliminado correctamente.");
+      } else {
+        setMensaje(data.message || "Error al eliminar el producto.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al eliminar el producto.");
+    }
   };
 
   return (
     <div style={{ padding: "2rem", maxWidth: "600px", margin: "auto", fontFamily: "sans-serif" }}>
       <h2>Gestión de Menú - {cafeteria.nombre}</h2>
+      {mensaje && <p>{mensaje}</p>}
 
       <ul>
         {menu.map((item, index) => (
@@ -110,13 +208,13 @@ const btn = {
   backgroundColor: "#ccc",
   border: "none",
   borderRadius: "4px",
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 const btnEliminar = {
   ...btn,
   backgroundColor: "#e57373",
-  color: "white"
+  color: "white",
 };
 
 const btnPrincipal = {
@@ -126,7 +224,7 @@ const btnPrincipal = {
   color: "white",
   border: "none",
   borderRadius: "6px",
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 export default MenuGestion;

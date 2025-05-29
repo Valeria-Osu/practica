@@ -1,0 +1,286 @@
+/* Incluir la fuente desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400;600&display=swap');
+
+/* Paleta de colores */
+:root {
+    --color-dark-brown: #3b2a1f; /* Color oscuro para fondos */
+    --color-medium-brown: #8e6c4b; /* Color de fondo medio */
+    --color-light-brown: #c67c3c; /* Color suave para botones y encabezados */
+    --color-cream: #f4f1ec; /* Fondo suave para secciones */
+    --color-white: #ffffff; /* Blanco */
+    --color-primary: #c67c3c; /* Color vibrante para elementos clave */
+    --color-dark: #2b2b2b; /* Texto oscuro */
+    --color-hover: #6f4e37; /* Color para hover */
+    --color-accent: #d9a36b; /* Color de acento para detalles */
+    --color-marron-claro: #9E7E54; /* Nuevo marrón más claro para botones */
+}
+
+/* Estilo general */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-cream);
+    margin: 0;
+    padding: 0;
+    color: var(--color-dark);
+}
+
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Header */
+header {
+    background-color: var(--color-dark-brown);
+    color: var(--color-white);
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid var(--color-primary);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+header .logo img {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
+}
+
+header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+header nav a {
+    color: var(--color-white);
+    text-decoration: none;
+    font-size: 20px;
+    margin-left: 25px;
+    text-transform: uppercase;
+}
+
+header nav a:hover {
+    color: var(--color-primary);
+    transition: color 0.3s ease;
+}
+
+/* Barra de búsqueda dentro de un panel */
+.search-bar {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+    background-color: var(--color-medium-brown);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    background-color: var(--color-cream);
+    color: var(--color-dark);
+}
+
+.search-bar input:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Texto de bienvenida */
+.welcome-text {
+    margin-top: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--color-dark);
+    text-align: center;
+}
+
+/* Barra de filtros dentro de un panel */
+.filter-panel {
+    background-color: var(--color-medium-brown);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Catálogo de cafeterías */
+.cafeteria-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.cafeteria-card {
+    background-color: var(--color-medium-brown);
+    color: var(--color-white);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cafeteria-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.cafeteria-card h3 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--color-primary);
+}
+
+.cafeteria-card p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.cafeteria-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Paginación */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.pagination button {
+    background-color: var(--color-marron-claro);
+    color: var(--color-white);
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: var(--color-hover);
+    transform: scale(1.1);
+}
+
+.pagination button:disabled {
+    background-color: var(--color-brown-dark);
+    cursor: not-allowed;
+}
+
+/* Recomendaciones */
+.recomendaciones {
+    background-color: var(--color-medium-brown);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.recomendaciones h3 {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.recomendaciones p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Footer */
+footer {
+    background-color: var(--color-dark-brown);
+    color: var(--color-white);
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    font-size: 14px;
+}
+
+/* Botones de acción (Iniciar sesión, Aplicar filtros) */
+button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+}
+
+button:hover {
+    background-color: var(--color-hover);
+    transform: scale(1.05);
+}
+
+button:disabled {
+    background-color: var(--color-brown-dark);
+    cursor: not-allowed;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .cafeteria-list {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .cafeteria-list {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 22px;
+    }
+
+    .search-bar input,
+    .search-bar select {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .filter-panel input,
+    .filter-panel select {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .search-bar {
+        max-width: 250px;
+        margin-top: 20px;
+    }
+}

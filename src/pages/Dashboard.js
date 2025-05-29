@@ -1,28 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
 import CafeteriasList from "./CafeteriasList";
-import Recomendaciones from "./Recomendaciones"; // Importamos el componente de recomendaciones
-import "./Dashboard.css"; // Asegúrate de importar el archivo CSS
+import Recomendaciones from "./Recomendaciones";
+import "../styles/styles.css";
 
-const Dashboard = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Estado para manejar la carga
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  // Filtros
+const Dashboard = ({ searchQuery }) => {
+  const [user, setUser] = useState(null); // Estado para almacenar la información del usuario
+  const [cafeterias, setCafeterias] = useState([]);
   const [ciudad, setCiudad] = useState("");
   const [servicios, setServicios] = useState([]);
   const [menu, setMenu] = useState("");
   const [appliedFilters, setAppliedFilters] = useState({});
-  const [searchQuery, setSearchQuery] = useState(""); // Estado para la búsqueda
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const itemsPerPage = 4; // Número de cafeterías por página
 
-  // Función para manejar logout
-  const handleLogout = () => {
-    auth.signOut();
-    navigate("/login");
-  };
+  // Opciones de servicios para los filtros
+  const opcionesServicios = ["wifi", "pet-friendly", "terraza", "baños", "desayunos", "estacionamiento"];
+
+  // Verificar si el usuario está autenticado (usando localStorage)
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decodedUser = JSON.parse(atob(token.split('.')[1])); // Decodificar JWT (si estás usando JWT)
+      setUser(decodedUser);
+    } else {
+      setUser(null); // Si no hay token, no hay usuario autenticado
+    }
+  }, []);
 
   // Función para manejar cambios en los servicios seleccionados
   const toggleServicio = (servicio) => {
@@ -42,88 +45,31 @@ const Dashboard = () => {
     });
   };
 
-  // Opciones de servicios para los filtros
-  const opcionesServicios = ["wifi", "pet-friendly", "terraza", "baños", "desayunos", "estacionamiento"];
-
-  // Fetch user data from Firebase
+  // Lógica para obtener las cafeterías (simulación)
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user); // Establece el usuario
+    const fetchCafeterias = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/cafeterias');
+        const data = await response.json();
+        setCafeterias(data.cafeterias); // Asume que el endpoint devuelve un array de cafeterías
+        console.log("Cafeterías cargadas:", data.cafeterias); // Verificar en consola
+      } catch (error) {
+        console.error("Error al cargar las cafeterías:", error); // Manejo de error
       }
-      setLoading(false); // Cambia el estado de carga a false
-    });
+    };
 
-    return () => unsubscribe(); // Limpiar el listener cuando el componente se desmonte
+    fetchCafeterias();
   }, []);
 
-  // Si el usuario está cargando, mostramos un mensaje de carga
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-
-  // Función para manejar el cambio en la búsqueda
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+  // Cambiar la página
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= Math.ceil(cafeterias.length / itemsPerPage)) {
+      setCurrentPage(newPage);
+    }
   };
-
-  // Función que verifica si el usuario es administrador
-  const isAdmin = user?.rol === "admin";
 
   return (
     <div>
-      {/* Header con barra de búsqueda */}
-      <header className="dashboard-header">
-        <h2 className="dashboard-title">Cafeterías</h2>
-
-        {/* Barra de búsqueda */}
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Buscar cafeterías por nombre..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="search-input"
-          />
-        </div>
-
-        {!user ? (
-          <Link to="/login">
-            <button className="login-button">
-              Iniciar sesión
-            </button>
-          </Link>
-        ) : (
-          <div className="profile-container">
-            {isAdmin && (
-              <Link
-                to="/admin/cafeterias"
-                className="admin-button"
-              >
-                Gestión de Cafeterías
-              </Link>
-            )}
-
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="profile-button"
-              title="Perfil"
-            >
-              🧑‍💼
-            </button>
-
-            {menuOpen && (
-              <div className="menu-dropdown">
-                <Link to="/perfil" className="menu-link">Mi perfil</Link>
-                <button onClick={handleLogout} className="menu-button">
-                  Cerrar sesión
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </header>
-
       {/* Contenido principal */}
       <div className="dashboard-content">
         <h1>Bienvenido, {user?.email || "Usuario"}</h1>
@@ -176,8 +122,11 @@ const Dashboard = () => {
 
         {/* Lista de cafeterías filtrada por la búsqueda */}
         <CafeteriasList
-          filtros={appliedFilters}
-          searchQuery={searchQuery} // Pasa la query de búsqueda al componente de lista
+          cafeterias={cafeterias}
+          searchQuery={searchQuery}
+          itemsPerPage={itemsPerPage} // Número de cafeterías por página
+          currentPage={currentPage} // Página actual
+          handlePageChange={handlePageChange} // Función para cambiar la página
         />
       </div>
     </div>

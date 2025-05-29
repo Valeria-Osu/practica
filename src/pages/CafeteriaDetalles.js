@@ -1,26 +1,53 @@
-import React, { useContext, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import cafeteriasData from "../data/cafeterias.json";
-import { AuthContext } from "../context/AuthContext";
-import Header from "./Header"; // Importamos el Header
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import Header from "../components/Header.js"; // Asegúrate de que el Header esté correctamente importado
 
 const CafeteriaDetalles = () => {
   const { id } = useParams();
-  const cafeteria = cafeteriasData.find(c => c.id === parseInt(id));
-  const { user, loading } = useContext(AuthContext);
-
+  const [cafeteria, setCafeteria] = useState(null);
+  const [menu, setMenu] = useState([]);
+  const [resenas, setResenas] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [puntuacion, setPuntuacion] = useState(5);
   const [comentario, setComentario] = useState("");
-  const [resenas, setResenas] = useState([]); // Estado local de reseñas
-  const [searchQuery, setSearchQuery] = useState(""); // Estado para la búsqueda
+  const [mensaje, setMensaje] = useState(""); // Utilizado para mostrar mensajes
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  if (loading) return <p>Cargando...</p>;
-  if (!cafeteria) return <p>Cafetería no encontrada</p>;
+  // Obtener el token JWT desde localStorage (si está disponible)
+  const token = localStorage.getItem("token");
+  const user = token ? JSON.parse(localStorage.getItem("usuario")) : null; // Obtener el usuario desde localStorage si está autenticado
+
+  useEffect(() => {
+    // Obtener la cafetería desde el backend
+    const fetchCafeteria = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/cafeteria/${id}`, {
+          headers: {
+            "Authorization": token ? `Bearer ${token}` : "",
+          }
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setCafeteria(data.cafeteria);
+          setMenu(data.cafeteria.menu);
+          setResenas(data.cafeteria.reseñas);
+        } else {
+          setMensaje("Error al obtener los detalles de la cafetería.");
+        }
+        setLoading(false);
+      } catch (error) {
+        setMensaje("Hubo un error al obtener los detalles de la cafetería.");
+        setLoading(false);
+      }
+    };
+
+    fetchCafeteria();
+  }, [id, token]);
 
   const handleMostrarFormulario = () => setMostrarFormulario(true);
 
-  const handleEnviarResena = (e) => {
+  const handleEnviarResena = async (e) => {
     e.preventDefault();
 
     if (puntuacion < 1 || puntuacion > 5) {
@@ -28,22 +55,50 @@ const CafeteriaDetalles = () => {
       return;
     }
 
+    if (!token) {
+      // Si el usuario no está autenticado, redirigirlo al login
+      navigate("/login");
+      return;
+    }
+
     const nuevaResena = {
       puntuacion,
       comentario,
-      usuario: user.nombre,
+      usuario: user ? user.nombre : "Desconocido", // Si no hay usuario, asignamos "Desconocido"
     };
 
-    setResenas([...resenas, nuevaResena]);
-    setPuntuacion(5);
-    setComentario("");
-    setMostrarFormulario(false);
+    try {
+      const response = await fetch(`http://localhost:5000/cafeterias/${id}/reseñas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(nuevaResena),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 200) {
+        setResenas([...resenas, data.resena]);
+        setPuntuacion(5);
+        setComentario("");
+        setMostrarFormulario(false);
+      } else {
+        setMensaje(data.message || "Error al enviar la reseña.");
+      }
+    } catch (error) {
+      setMensaje("Hubo un error al enviar la reseña.");
+    }
   };
+
+  if (loading) return <p>Cargando...</p>;
+  if (!cafeteria) return <p>Cafetería no encontrada</p>;
 
   return (
     <div>
       {/* Header con barra de búsqueda */}
-      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Header />
 
       {/* Contenido de los detalles de la cafetería */}
       <div style={{ padding: "2rem", maxWidth: "800px", margin: "auto", fontFamily: "sans-serif" }}>
@@ -55,10 +110,10 @@ const CafeteriaDetalles = () => {
             style={{ width: "100%", maxHeight: "300px", objectFit: "cover", borderRadius: "8px" }}
           />
         )}
-        
+
         <h3 style={{ marginTop: "1.5rem" }}>Menú</h3>
         <ul>
-          {cafeteria.menu.map((item, index) => (
+          {menu.map((item, index) => (
             <li key={index}>
               {item.nombre} - ${item.precio.toFixed(2)}
             </li>
@@ -94,6 +149,9 @@ const CafeteriaDetalles = () => {
         ) : (
           <p>No hay reseñas aún.</p>
         )}
+
+        {/* Mostrar mensaje de error o éxito */}
+        {mensaje && <p style={{ color: "red", fontWeight: "bold" }}>{mensaje}</p>}
 
         {user ? (
           <>

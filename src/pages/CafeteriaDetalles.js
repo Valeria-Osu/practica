@@ -14,12 +14,12 @@ const CafeteriaDetalles = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Obtener el token JWT desde localStorage (si está disponible)
+  // aqui te dice si se obtiene el token JWT desde localStorage (si está disponible)
   const token = localStorage.getItem("token");
   const user = token ? JSON.parse(localStorage.getItem("usuario")) : null; // Obtener el usuario desde localStorage si está autenticado
 
   useEffect(() => {
-    // Obtener la cafetería desde el backend
+    // cafeteria desde el backend
     const fetchCafeteria = async () => {
       try {
         const response = await fetch(`http://localhost:5000/cafeteria/${id}`, {

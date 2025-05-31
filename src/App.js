@@ -10,7 +10,7 @@ import MenuGestion from "./pages/MenuGestion";
 import CafeteriasAdmin from "./components/CafeteriasAdmin";
 import ModeracionAdmin from "./components/ModeracionAdmin";
 import Header from "./components/Header"; // Importa el Header
-import './styles/styles.css'; // Importando el archivo CSS con los estilos
+import './styles/styles.css'; // Importando el archivo CSS con los estilos globales
 
 function App() {
   const [searchQuery, setSearchQuery] = useState(""); // Define el estado para la búsqueda

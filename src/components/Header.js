@@ -20,10 +20,13 @@ const Header = ({ searchQuery, setSearchQuery }) => {
         />
       </div>
 
-      {/* Contenedor de perfil y botón de inicio de sesión */}
-      <div className="profile-container">
+      {/* Contenedor de perfil y botones de autenticación */}
+      <div className="auth-buttons">
         <Link to="/login">
-          <button className="login-button">Iniciar sesión</button>
+          <button>Iniciar sesión</button>
+        </Link>
+        <Link to="/register">
+          <button>Registrarse</button>
         </Link>
       </div>
     </header>

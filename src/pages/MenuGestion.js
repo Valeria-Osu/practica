@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import '../styles/styles.css'; // Importando el archivo CSS con los estilos globales
+
+// Asume que las cafeterías y el menú se obtienen de una API backend
+import "../styles/styles.css";
 
 const MenuGestion = () => {
   const { id } = useParams();
@@ -146,21 +148,21 @@ const MenuGestion = () => {
   };
 
   return (
-    <div className="container">
+    <div style={{ padding: "2rem", maxWidth: "600px", margin: "auto", fontFamily: "sans-serif" }}>
       <h2>Gestión de Menú - {cafeteria.nombre}</h2>
-      {mensaje && <p className="message">{mensaje}</p>}
+      {mensaje && <p>{mensaje}</p>}
 
-      <ul className="menu-list">
+      <ul>
         {menu.map((item, index) => (
-          <li key={index} className="menu-item">
+          <li key={index} style={{ marginBottom: "0.5rem" }}>
             {item.nombre} - ${item.precio.toFixed(2)}
-            <button onClick={() => handleEditar(index)} className="btn">Editar</button>
-            <button onClick={() => handleEliminar(index)} className="btn btn-delete">Eliminar</button>
+            <button onClick={() => handleEditar(index)} style={btn}>Editar</button>
+            <button onClick={() => handleEliminar(index)} style={btnEliminar}>Eliminar</button>
           </li>
         ))}
       </ul>
 
-      <form onSubmit={editandoIndex !== null ? handleGuardarEdicion : handleAgregar} className="form">
+      <form onSubmit={editandoIndex !== null ? handleGuardarEdicion : handleAgregar} style={{ marginTop: "2rem" }}>
         <h4>{editandoIndex !== null ? "Editar producto" : "Agregar nuevo producto"}</h4>
         <label>
           Nombre:
@@ -170,11 +172,11 @@ const MenuGestion = () => {
             value={nuevoProducto.nombre}
             onChange={handleInputChange}
             required
-            className="input"
+            style={{ marginLeft: "0.5rem" }}
           />
         </label>
         <br />
-        <label>
+        <label style={{ marginTop: "1rem", display: "block" }}>
           Precio:
           <input
             type="number"
@@ -184,20 +186,45 @@ const MenuGestion = () => {
             required
             step="0.01"
             min="0"
-            className="input"
+            style={{ marginLeft: "0.5rem" }}
           />
         </label>
         <br />
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" style={btnPrincipal}>
           {editandoIndex !== null ? "Guardar cambios" : "Agregar producto"}
         </button>
       </form>
 
-      <p>
-        <Link to={`/cafeteria/${cafeteria.id}`} className="link">← Volver a detalles</Link>
+      <p style={{ marginTop: "2rem" }}>
+        <Link to={`/cafeteria/${cafeteria.id}`}>← Volver a detalles</Link>
       </p>
     </div>
   );
+};
+
+const btn = {
+  marginLeft: "0.5rem",
+  padding: "0.2rem 0.5rem",
+  backgroundColor: "#ccc",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+};
+
+const btnEliminar = {
+  ...btn,
+  backgroundColor: "#e57373",
+  color: "white",
+};
+
+const btnPrincipal = {
+  marginTop: "1rem",
+  padding: "0.5rem 1rem",
+  backgroundColor: "#6f4e37",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
 };
 
 export default MenuGestion;

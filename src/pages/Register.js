@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import '../styles/styles.css'; // Importando el archivo CSS con los estilos globales
 
 function Register() {
   const [email, setEmail] = useState(""); // Para almacenar el correo
@@ -20,18 +19,17 @@ function Register() {
   };
 
   return (
-    <div className="register-container">
+    <div style={{ padding: "2rem", maxWidth: "400px", margin: "auto" }}>
       <h2>Registro</h2>
       
       {/* Formulario de registro */}
-      <form onSubmit={handleRegister} className="register-form">
+      <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <input
           type="email"
           placeholder="Correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="input-field"
         />
         <input
           type="password"
@@ -39,16 +37,17 @@ function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="input-field"
         />
         
-        <button type="submit" className="btn btn-primary">Registrarse</button>
+        <button type="submit">Registrarse</button>
       </form>
 
       {/* Enlace para redirigir al Login si el usuario ya tiene cuenta */}
-      <p className="link-container">
+      <p style={{ marginTop: "1rem", textAlign: "center" }}>
         ¿Ya tienes cuenta?{" "}
-        <Link to="/login" className="link">Inicia sesión aquí</Link>
+        <Link to="/login" style={{ color: "#007bff", textDecoration: "underline" }}>
+          Inicia sesión aquí
+        </Link>
       </p>
     </div>
   );

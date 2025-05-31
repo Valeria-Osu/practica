@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header.js"; // Asegúrate de que el Header esté correctamente importado
-import '../styles/styles.css'; // Importando el archivo CSS con los estilos globales
 
 const CafeteriaDetalles = () => {
   const { id } = useParams();
@@ -102,18 +101,18 @@ const CafeteriaDetalles = () => {
       <Header />
 
       {/* Contenido de los detalles de la cafetería */}
-      <div className="container">
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "auto", fontFamily: "sans-serif" }}>
         <h2>{cafeteria.nombre}</h2>
         {cafeteria.imagen && (
           <img
             src={cafeteria.imagen}
             alt={cafeteria.nombre}
-            className="cafeteria-image"
+            style={{ width: "100%", maxHeight: "300px", objectFit: "cover", borderRadius: "8px" }}
           />
         )}
 
-        <h3>Menú</h3>
-        <ul className="menu-list">
+        <h3 style={{ marginTop: "1.5rem" }}>Menú</h3>
+        <ul>
           {menu.map((item, index) => (
             <li key={index}>
               {item.nombre} - ${item.precio.toFixed(2)}
@@ -123,17 +122,26 @@ const CafeteriaDetalles = () => {
 
         {/* Botón para gestión de menú (solo admin) */}
         {user?.rol === "admin" && (
-          <p>
-            <Link to={`/cafeteria/${cafeteria.id}/gestion-menu`} className="button">
+          <p style={{ marginTop: "1rem" }}>
+            <Link
+              to={`/cafeteria/${cafeteria.id}/gestion-menu`}
+              style={{
+                padding: "0.5rem 1rem",
+                backgroundColor: "#6f4e37",
+                color: "white",
+                textDecoration: "none",
+                borderRadius: "6px"
+              }}
+            >
               Editar menú
             </Link>
           </p>
         )}
 
-        <h3>Reseñas</h3>
+        <h3 style={{ marginTop: "2rem" }}>Reseñas</h3>
         {resenas.length > 0 ? (
           resenas.map((r, index) => (
-            <div key={index} className="review-card">
+            <div key={index} style={{ marginBottom: "1rem", backgroundColor: "#f0f0f0", padding: "1rem", borderRadius: "8px" }}>
               <p><strong>{r.usuario}</strong> - {r.puntuacion}⭐</p>
               <p>{r.comentario}</p>
             </div>
@@ -143,16 +151,27 @@ const CafeteriaDetalles = () => {
         )}
 
         {/* Mostrar mensaje de error o éxito */}
-        {mensaje && <p className="error-message">{mensaje}</p>}
+        {mensaje && <p style={{ color: "red", fontWeight: "bold" }}>{mensaje}</p>}
 
         {user ? (
           <>
-            <button onClick={handleMostrarFormulario} className="button">
+            <button
+              onClick={handleMostrarFormulario}
+              style={{
+                padding: "0.5rem 1rem",
+                backgroundColor: "#6f4e37",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                marginTop: "1.5rem"
+              }}
+            >
               Escribir reseña
             </button>
 
             {mostrarFormulario && (
-              <form onSubmit={handleEnviarResena} className="review-form">
+              <form onSubmit={handleEnviarResena} style={{ marginTop: "1rem", backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
                 <label>
                   Puntuación (1 a 5):
                   <input
@@ -161,32 +180,45 @@ const CafeteriaDetalles = () => {
                     max="5"
                     value={puntuacion}
                     onChange={(e) => setPuntuacion(parseInt(e.target.value))}
+                    style={{ marginLeft: "0.5rem", width: "3rem" }}
                     required
                   />
                 </label>
                 <br />
-                <label>
+                <label style={{ display: "block", marginTop: "1rem" }}>
                   Comentario:
                   <textarea
                     value={comentario}
                     onChange={(e) => setComentario(e.target.value)}
                     rows="4"
+                    style={{ display: "block", width: "100%", marginTop: "0.5rem" }}
                     required
                   />
                 </label>
-                <button type="submit" className="button">
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: "1rem",
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "#6f4e37",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer"
+                  }}
+                >
                   Enviar reseña
                 </button>
               </form>
             )}
           </>
         ) : (
-          <p>
+          <p style={{ marginTop: "1.5rem" }}>
             <Link to="/login">Inicia sesión</Link> para dejar una reseña.
           </p>
         )}
 
-        <p>
+        <p style={{ marginTop: "2rem" }}>
           <Link to="/">← Volver al catálogo</Link>
         </p>
       </div>

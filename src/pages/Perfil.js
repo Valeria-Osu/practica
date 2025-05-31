@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/styles.css"; // Importando el archivo CSS con los estilos globales
+import "../styles/styles.css";
 
 const Perfil = () => {
   const [nombre, setNombre] = useState("");
@@ -60,27 +60,23 @@ const Perfil = () => {
           type="text"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          className="input-field"
         />
 
         <label>Correo electrónico</label>
-        <input type="email" value={userEmail} disabled className="input-field" />
+        <input type="email" value={userEmail} disabled />
 
         <label>Foto de perfil (URL)</label>
         <input
           type="text"
           value={fotoURL}
           onChange={(e) => setFotoURL(e.target.value)}
-          className="input-field"
         />
 
         {fotoURL && (
           <img src={fotoURL} alt="Foto de perfil" className="foto-preview" />
         )}
 
-        <button onClick={handleGuardar} className="btn btn-primary">
-          Guardar Cambios
-        </button>
+        <button onClick={handleGuardar}>Guardar Cambios</button>
 
         {mensaje && <p className="mensaje">{mensaje}</p>}
       </div>

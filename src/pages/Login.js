@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import '../styles/styles.css'; // Importando el archivo CSS con los estilos globales
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -37,14 +38,15 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "400px", margin: "auto" }}>
+    <div className="login-container">
       <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <form onSubmit={handleLogin} className="login-form">
         <input
           type="email"
           placeholder="Correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="input-field"
           required
         />
         <input
@@ -52,18 +54,19 @@ function Login() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="input-field"
           required
         />
-        <button type="submit">Entrar</button>
+        <button type="submit" className="submit-button">Entrar</button>
       </form>
 
       {/* Error de login */}
-      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
       {/* Enlace a registro */}
-      <p style={{ marginTop: "1rem", textAlign: "center" }}>
+      <p className="register-link">
         ¿No tienes cuenta?{" "}
-        <Link to="/register" style={{ color: "#007bff", textDecoration: "underline" }}>
+        <Link to="/register" className="link">
           Regístrate aquí
         </Link>
       </p>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import Header from "../components/Header.js"; // Asegúrate de que el Header esté correctamente importado
-import '../styles/styles.css'; // Importando el archivo CSS con los estilos globales
+import Header from "../components/Header.js";
+import '../styles/styles.css';
 
 const CafeteriaDetalles = () => {
   const { id } = useParams();
@@ -11,16 +11,14 @@ const CafeteriaDetalles = () => {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [puntuacion, setPuntuacion] = useState(5);
   const [comentario, setComentario] = useState("");
-  const [mensaje, setMensaje] = useState(""); // Utilizado para mostrar mensajes
+  const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // aqui te dice si se obtiene el token JWT desde localStorage (si está disponible)
   const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(localStorage.getItem("usuario")) : null; // Obtener el usuario desde localStorage si está autenticado
+  const user = token ? JSON.parse(localStorage.getItem("usuario")) : null;
 
   useEffect(() => {
-    // cafeteria desde el backend
     const fetchCafeteria = async () => {
       try {
         const response = await fetch(`http://localhost:5000/cafeteria/${id}`, {
@@ -57,7 +55,6 @@ const CafeteriaDetalles = () => {
     }
 
     if (!token) {
-      // Si el usuario no está autenticado, redirigirlo al login
       navigate("/login");
       return;
     }
@@ -65,7 +62,7 @@ const CafeteriaDetalles = () => {
     const nuevaResena = {
       puntuacion,
       comentario,
-      usuario: user ? user.nombre : "Desconocido", // Si no hay usuario, asignamos "Desconocido"
+      usuario: user ? user.nombre : "Desconocido",
     };
 
     try {
@@ -97,12 +94,10 @@ const CafeteriaDetalles = () => {
   if (!cafeteria) return <p>Cafetería no encontrada</p>;
 
   return (
-    <div>
-      {/* Header con barra de búsqueda */}
+    <div className="cafeteria-detalles-page">
       <Header />
 
-      {/* Contenido de los detalles de la cafetería */}
-      <div className="container">
+      <div className="cafeteria-detalles-container">
         <h2>{cafeteria.nombre}</h2>
         {cafeteria.imagen && (
           <img
@@ -121,7 +116,6 @@ const CafeteriaDetalles = () => {
           ))}
         </ul>
 
-        {/* Botón para gestión de menú (solo admin) */}
         {user?.rol === "admin" && (
           <p>
             <Link to={`/cafeteria/${cafeteria.id}/gestion-menu`} className="button">
@@ -142,7 +136,6 @@ const CafeteriaDetalles = () => {
           <p>No hay reseñas aún.</p>
         )}
 
-        {/* Mostrar mensaje de error o éxito */}
         {mensaje && <p className="error-message">{mensaje}</p>}
 
         {user ? (
@@ -164,7 +157,6 @@ const CafeteriaDetalles = () => {
                     required
                   />
                 </label>
-                <br />
                 <label>
                   Comentario:
                   <textarea

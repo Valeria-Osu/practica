@@ -22,8 +22,14 @@ const opcionesServicios = [
   { value: "estacionamiento", label: "Estacionamiento" }
 ];
 
-// Componente MultiSelectDropdown para servicios
-function MultiSelectDropdown({ options, selected, setSelected, placeholder = "Seleccionar servicios" }) {
+const opcionesMenu = [
+  { value: "cafe", label: "Café" },
+  { value: "desayuno", label: "Desayunos" },
+  { value: "postres", label: "Postres" }
+];
+
+// Componente MultiSelectDropdown para servicios y menú
+function MultiSelectDropdown({ options, selected, setSelected, placeholder = "Seleccionar" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef();
 
@@ -81,19 +87,11 @@ const Dashboard = () => {
   const [cafeterias, setCafeterias] = useState([]);
   const [ciudad, setCiudad] = useState("");
   const [servicios, setServicios] = useState([]);
-  const [menu, setMenu] = useState("");
+  const [menuSeleccionado, setMenuSeleccionado] = useState([]);
   const [appliedFilters, setAppliedFilters] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [cafeteriaSeleccionada, setCafeteriaSeleccionada] = useState(null);
   const itemsPerPage = 2; // 2 cafeterías por página
-
-  // DEBUG: Mostrar datos en consola para depuración
-  // Puedes quitar estos console.log después de verificar
-  // useEffect(() => {
-  //   console.log("cafeterias:", cafeterias);
-  //   console.log("filteredCafeterias:", filteredCafeterias);
-  //   console.log("visibleCafeterias:", visibleCafeterias);
-  // }, [cafeterias, ciudad, servicios, menu, appliedFilters, currentPage]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,7 +107,7 @@ const Dashboard = () => {
     setAppliedFilters({
       ciudad,
       servicios,
-      menu
+      menu: menuSeleccionado
     });
     setCurrentPage(1); // Reinicia a la primera página al aplicar filtros
   };
@@ -119,31 +117,9 @@ const Dashboard = () => {
       try {
         const response = await fetch('http://localhost:5000/cafeterias');
         const data = await response.json();
-        // Si la respuesta no tiene la propiedad cafeterias, usa data directamente
         setCafeterias(data.cafeterias || data || []);
       } catch (error) {
         console.error("Error al cargar las cafeterías:", error);
-        // Para pruebas, puedes descomentar esto para ver tarjetas dummy:
-        // setCafeterias([
-        //   {
-        //     id: 1,
-        //     nombre: "Café Central",
-        //     descripcion: "Un lugar acogedor para disfrutar café.",
-        //     imagen: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-        //     zona: "centro",
-        //     servicios: ["wifi", "baños"],
-        //     menu: ["cafe", "desayuno"]
-        //   },
-        //   {
-        //     id: 2,
-        //     nombre: "La Esquina",
-        //     descripcion: "Cafetería con terraza y postres deliciosos.",
-        //     imagen: "https://images.unsplash.com/photo-1511920170033-f8396924c348",
-        //     zona: "norte",
-        //     servicios: ["terraza", "pet-friendly"],
-        //     menu: ["cafe", "postres"]
-        //   }
-        // ]);
       }
     };
 
@@ -159,9 +135,14 @@ const Dashboard = () => {
   // Filtrado de cafeterías según los filtros aplicados
   const filteredCafeterias = cafeterias.filter((cafeteria) => {
     const matchCiudad = !appliedFilters.ciudad || cafeteria.zona === appliedFilters.ciudad;
-    const matchMenu = !appliedFilters.menu || (cafeteria.menu && cafeteria.menu.includes(appliedFilters.menu));
+    const matchMenu =
+      !appliedFilters.menu ||
+      appliedFilters.menu.length === 0 ||
+      (cafeteria.menu &&
+        appliedFilters.menu.some((menu) => cafeteria.menu.includes(menu)));
     const matchServicios =
-      !appliedFilters.servicios || appliedFilters.servicios.length === 0 ||
+      !appliedFilters.servicios ||
+      appliedFilters.servicios.length === 0 ||
       (cafeteria.servicios &&
         appliedFilters.servicios.every((serv) => cafeteria.servicios.includes(serv)));
     return matchCiudad && matchMenu && matchServicios;
@@ -201,16 +182,13 @@ const Dashboard = () => {
             placeholder="Servicios"
           />
 
-          {/* Menú como select */}
-          <select
-            value={menu}
-            onChange={e => setMenu(e.target.value)}
-          >
-            <option value="">Tipo de menú</option>
-            <option value="cafe">Café</option>
-            <option value="desayuno">Desayunos</option>
-            <option value="postres">Postres</option>
-          </select>
+          {/* Menú como dropdown multiselección */}
+          <MultiSelectDropdown
+            options={opcionesMenu}
+            selected={menuSeleccionado}
+            setSelected={setMenuSeleccionado}
+            placeholder="Tipo de menú"
+          />
 
           <button className="filter-button" onClick={handleAplicarFiltros}>
             Aplicar filtros

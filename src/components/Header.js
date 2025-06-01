@@ -6,7 +6,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
       {/* Logo y título que redirige al Dashboard */}
       <div className="logo" onClick={() => window.location.href = '/'}>
         <img src={require('../logo.svg')} alt="Logo" />
-        <h1>Catálogo de Cafeterías</h1>
+        <h1 className="main-title">Catálogo de Cafeterías</h1>
       </div>
 
       {/* Barra de búsqueda */}

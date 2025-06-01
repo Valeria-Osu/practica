@@ -1,19 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 /* Estilos generales */
 body {
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f5eee6 0%, #bfae9c 100%);
+  background: #f5eee6;
   color: #3e2723;
 }
 
 /* Header */
 header {
-  background: linear-gradient(90deg, #6f4e37 0%, #a47551 100%);
+  background: #3B2A1F;
   color: white;
-  padding: 1.2rem 2.5rem 1.2rem 2.5rem;
+  padding: 0.7rem 2.5rem 0.7rem 2.5rem; /* Menos altura */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,9 +32,9 @@ header .logo {
 }
 
 header .logo img {
-  width: 54px;
-  height: auto;
-  margin-right: 18px;
+  height: 38px;
+  width: auto;
+  margin-right: 14px;
   filter: drop-shadow(0 2px 8px rgba(0,0,0,0.18));
   transition: transform 0.2s;
 }
@@ -41,13 +42,15 @@ header .logo img:hover {
   transform: scale(1.12) rotate(-4deg);
 }
 
-header h1 {
-  font-family: 'Pacifico', cursive, 'Montserrat', sans-serif;
-  font-size: 2.3rem;
-  margin: 0;
-  letter-spacing: 2.5px;
+.main-title {
+  font-family: 'Playwrite US Trad', 'Playfair Display', serif;
+  color: #fff;
+  font-size: 1.5rem;
   font-weight: 700;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  margin: 0;
+  letter-spacing: 1.5px;
+  line-height: 1.1;
+  padding: 0;
 }
 
 header .search-bar {
@@ -58,12 +61,12 @@ header .search-bar {
 header input[type="text"],
 header input[type="search"] {
   padding: 0.7rem 1.4rem;
-  width: 60%;
+  width: 50%;
   border-radius: 22px;
   border: none;
   background: #fff;
   color: #6f4e37;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   box-shadow: 0 2px 12px rgba(111,78,55,0.10);
   transition: box-shadow 0.2s;
@@ -80,14 +83,14 @@ header .auth-buttons {
 }
 
 header .auth-buttons button {
-  background: linear-gradient(90deg, #e5c9a5 60%, #bfae9c 100%);
-  color: #5d4037;
+  background: #a47551;
+  color: #fff;
   padding: 0.7rem 1.8rem;
   border: none;
   border-radius: 22px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 1.08rem;
+  font-size: 0.8rem;
   letter-spacing: 1.2px;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   box-shadow: 0 2px 12px rgba(175, 143, 102, 0.13);
@@ -95,7 +98,7 @@ header .auth-buttons button {
   outline: none;
 }
 header .auth-buttons button:hover {
-  background: linear-gradient(90deg, #bfae9c 60%, #e5c9a5 100%);
+  background: #906647;
   color: #3e2723;
   transform: translateY(-2px) scale(1.06);
 }
@@ -129,6 +132,7 @@ header .auth-buttons button:hover {
   z-index: 1;
 }
 
+/* Sombra negra cubriendo toda la imagen */
 .panel-image::after {
   content: "";
   position: absolute;
@@ -140,7 +144,7 @@ header .auth-buttons button:hover {
   pointer-events: none;
 }
 
-/* Título dentro del panel, encima de la imagen */
+/* Título dentro del panel, centrado sobre la imagen y la sombra */
 .panel-image h2 {
   position: absolute;
   top: 50%;
@@ -161,25 +165,13 @@ header .auth-buttons button:hover {
   line-height: 1.2;
 }
 
-/* Opcional: para pantallas pequeñas */
-@media screen and (max-width: 600px) {
-  .panel-image img {
-    height: 140px;
-  }
-  .panel-image h2 {
-    font-size: 1.3rem;
-    padding: 1.2rem 0 0.7rem 0;
-  }
-}
-
 /* Barra de filtros */
 .filter-bar {
-  background: linear-gradient(90deg, #a47551 80%, #6f4e37 100%);
+  background: #6f4e37;
   padding: 1.3rem 2.2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 18px;
   margin-bottom: 2.2rem;
   box-shadow: 0 2px 14px rgba(111,78,55,0.08);
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
@@ -190,10 +182,10 @@ header .auth-buttons button:hover {
   padding: 0.7rem 1.1rem;
   border-radius: 16px;
   border: 1px solid #bfae9c;
-  width: 32%;
+  width: 27%;
   background: #fff;
   color: #6f4e37;
-  font-size: 1.08rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   transition: border 0.2s;
   cursor: pointer;
@@ -210,33 +202,33 @@ header .auth-buttons button:hover {
 }
 
 .filter-bar .filter-checkbox-label {
-  font-size: 1.08rem;
+  font-size: 0.8rem;
   color: #fff;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
 }
 
 .filter-bar .filter-button {
-  background: linear-gradient(90deg, #6f4e37 70%, #a47551 100%);
-  color: white;
+  background: #efd9c8;
+  color: black;
   border: none;
   padding: 0.7rem 1.8rem;
   border-radius: 22px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 1.08rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   box-shadow: 0 2px 12px rgba(111,78,55,0.13);
   transition: background 0.2s, transform 0.2s;
 }
 .filter-bar .filter-button:hover {
-  background: linear-gradient(90deg, #a47551 70%, #6f4e37 100%);
+  background: #d2c1b3;
   transform: translateY(-2px) scale(1.06);
 }
 
 /* Dropdown personalizado para servicios */
 .multi-dropdown {
   position: relative;
-  width: 32%;
+  width: 27%;
   min-width: 180px;
 }
 
@@ -247,7 +239,7 @@ header .auth-buttons button:hover {
   border: 1px solid #bfae9c;
   background: #fff;
   color: #6f4e37;
-  font-size: 1.08rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   text-align: left;
   cursor: pointer;
@@ -276,7 +268,7 @@ header .auth-buttons button:hover {
   display: flex;
   align-items: center;
   padding: 0.4rem 1rem;
-  font-size: 1.05rem;
+  font-size: 0.8rem;
   color: #6f4e37;
   cursor: pointer;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
@@ -431,7 +423,7 @@ header .auth-buttons button:hover {
 
 /* Título centrado y destacado */
 .login-container h2 {
-  font-family: 'Pacifico', cursive, 'Montserrat', sans-serif;
+  font-family: 'Playfair Display', cursive, 'Montserrat', sans-serif;
   font-size: 2.2rem;
   color: #6f4e37;
   margin-bottom: 2rem;
@@ -457,10 +449,10 @@ header .auth-buttons button:hover {
   width: 100%;
   padding: 0.9rem 1.4rem;
   border-radius: 22px;
-  border: none;
-  background: #f5eee6;
+  border: 1px, #a47551;
+  background: #faf6f2;
   color: #6f4e37;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   box-shadow: 0 2px 12px rgba(111,78,55,0.10);
   transition: box-shadow 0.2s, border 0.2s;
@@ -474,21 +466,23 @@ header .auth-buttons button:hover {
 
 /* Botón llamativo */
 .submit-button {
-  background: linear-gradient(90deg, #6f4e37 70%, #a47551 100%);
-  color: white;
-  padding: 0.9rem 2.2rem;
+  background: #a47551;
+  color: #fff;
+  padding: 0.7rem 1.8rem;
   border: none;
   border-radius: 22px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 0.8rem;
+  letter-spacing: 1.2px;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
-  box-shadow: 0 2px 12px rgba(111,78,55,0.13);
-  transition: background 0.2s, transform 0.2s;
-  margin-top: 0.5rem;
+  box-shadow: 0 2px 12px rgba(175, 143, 102, 0.13);
+  transition: background 0.2s, transform 0.2s, color 0.2s;
+  outline: none;
 }
 .submit-button:hover {
-  background: linear-gradient(90deg, #a47551 70%, #6f4e37 100%);
+  background: #906647;
+  color: black;
   transform: translateY(-2px) scale(1.06);
 }
 
@@ -529,7 +523,7 @@ header .auth-buttons button:hover {
 
 /* Título centrado y destacado */
 .register-container h2 {
-  font-family: 'Pacifico', cursive, 'Montserrat', sans-serif;
+  font-family: 'Playfair Display', cursive, 'Montserrat', sans-serif;
   font-size: 2.2rem;
   color: #6f4e37;
   margin-bottom: 2rem;
@@ -555,10 +549,10 @@ header .auth-buttons button:hover {
   width: 100%;
   padding: 0.9rem 1.4rem;
   border-radius: 22px;
-  border: none;
-  background: #f5eee6;
+  border: 1px, #a47551;
+  background: #faf6f2;
   color: #6f4e37;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   box-shadow: 0 2px 12px rgba(111,78,55,0.10);
   transition: box-shadow 0.2s, border 0.2s;
@@ -573,14 +567,14 @@ header .auth-buttons button:hover {
 /* Botón llamativo */
 .register-form .btn,
 .register-form .btn-primary {
-  background: linear-gradient(90deg, #6f4e37 70%, #a47551 100%);
+  background: #a47551;
   color: white;
   padding: 0.9rem 2.2rem;
   border: none;
   border-radius: 22px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 0.8rem;
   font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
   box-shadow: 0 2px 12px rgba(111,78,55,0.13);
   transition: background 0.2s, transform 0.2s;
@@ -588,7 +582,8 @@ header .auth-buttons button:hover {
 }
 .register-form .btn:hover,
 .register-form .btn-primary:hover {
-  background: linear-gradient(90deg, #a47551 70%, #6f4e37 100%);
+  background: #906647;
+  color: black;
   transform: translateY(-2px) scale(1.06);
 }
 

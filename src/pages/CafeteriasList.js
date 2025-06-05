@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import api from "../config/axios";
+import { Link } from "react-router-dom";
 
 const CafeteriasList = ({
-  cafeterias,
-  searchQuery,
-  itemsPerPage,
-  currentPage,
-  handlePageChange,
+  searchQuery = "",
+  itemsPerPage = 5,
+  currentPage = 1,
+  handlePageChange = () => {},
 }) => {
-  // Filtrar cafeterías por búsqueda
+  const [cafeterias, setCafeterias] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCafeterias = async () => {
+      try {
+        const response = await api.get("/cafeterias");
+        setCafeterias(response.data);
+      } catch (error) {
+        setCafeterias([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCafeterias();
+  }, []);
+
+  // Filtrar cafeterías por búsqueda (soporta nombre o nombreCafeteria)
   const filteredCafeterias = cafeterias.filter((cafeteria) =>
-    cafeteria.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+    (cafeteria.nombre || cafeteria.nombreCafeteria || "")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
   );
 
   // Calcular las cafeterías a mostrar para la página actual
@@ -18,17 +38,29 @@ const CafeteriasList = ({
   const currentCafeterias = filteredCafeterias.slice(indexOfFirstCafeteria, indexOfLastCafeteria);
 
   // Número total de páginas
-  const totalPages = Math.ceil(filteredCafeterias.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredCafeterias.length / itemsPerPage));
+
+  if (loading) return <p>Cargando cafeterías...</p>;
 
   return (
     <div>
       <div className="cafeteria-list">
         {currentCafeterias.length > 0 ? (
           currentCafeterias.map((cafeteria, index) => (
-            <div key={index} className="cafeteria-card">
-              <img src={cafeteria.imagen} alt={cafeteria.nombre} />
-              <h3>{cafeteria.nombre}</h3>
-              <p>{cafeteria.descripcion}</p>
+            <div key={cafeteria.id || cafeteria.nombreCafeteria || index} className="cafeteria-card">
+              <img
+                src={cafeteria.imagen || cafeteria.imagenURL || "default_image.jpg"}
+                alt={cafeteria.nombre || cafeteria.nombreCafeteria || "Cafetería"}
+              />
+              <h3>{cafeteria.nombre || cafeteria.nombreCafeteria}</h3>
+              <p>{cafeteria.descripcion || cafeteria.ubicacion}</p>
+              <Link
+                to={`/cafeteria/${cafeteria.id}`}
+                className="button"
+                style={{ marginTop: "10px" }}
+              >
+                Ver detalles
+              </Link>
             </div>
           ))
         ) : (

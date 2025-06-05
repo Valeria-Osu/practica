@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import api from "../config/axios.js";
 import Recomendaciones from "./Recomendaciones";
 import CafeteriaModal from "./CafeteriaModal";
 import "../styles/styles.css";
 import coffeeImg from "../assets/coffee.jpg";
 
 const zonas = [
-  { value: "", label: "Selecciona zona o ciudad" },
+  { value: "", label: "Selecciona zona" },
   { value: "centro", label: "Centro" },
   { value: "norte", label: "Norte" },
-  { value: "sur", label: "Sur" },
-  { value: "poniente", label: "Poniente" },
-  { value: "oriente", label: "Oriente" }
+  { value: "sur", label: "Sur" }
 ];
 
 const opcionesServicios = [
@@ -88,10 +88,8 @@ const Dashboard = () => {
   const [ciudad, setCiudad] = useState("");
   const [servicios, setServicios] = useState([]);
   const [menuSeleccionado, setMenuSeleccionado] = useState([]);
-  const [appliedFilters, setAppliedFilters] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
+  const [appliedFilters, setAppliedFilters] = useState({ ciudad: "" });
   const [cafeteriaSeleccionada, setCafeteriaSeleccionada] = useState(null);
-  const itemsPerPage = 2; // 2 cafeterías por página
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,15 +107,13 @@ const Dashboard = () => {
       servicios,
       menu: menuSeleccionado
     });
-    setCurrentPage(1); // Reinicia a la primera página al aplicar filtros
   };
 
   useEffect(() => {
     const fetchCafeterias = async () => {
       try {
-        const response = await fetch('http://localhost:5000/cafeterias');
-        const data = await response.json();
-        setCafeterias(data.cafeterias || data || []);
+        const response = await api.get("/cafeterias");
+        setCafeterias(response.data);
       } catch (error) {
         console.error("Error al cargar las cafeterías:", error);
       }
@@ -126,32 +122,10 @@ const Dashboard = () => {
     fetchCafeterias();
   }, []);
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= Math.ceil(filteredCafeterias.length / itemsPerPage)) {
-      setCurrentPage(newPage);
-    }
-  };
-
   // Filtrado de cafeterías según los filtros aplicados
   const filteredCafeterias = cafeterias.filter((cafeteria) => {
-    const matchCiudad = !appliedFilters.ciudad || cafeteria.zona === appliedFilters.ciudad;
-    const matchMenu =
-      !appliedFilters.menu ||
-      appliedFilters.menu.length === 0 ||
-      (cafeteria.menu &&
-        appliedFilters.menu.some((menu) => cafeteria.menu.includes(menu)));
-    const matchServicios =
-      !appliedFilters.servicios ||
-      appliedFilters.servicios.length === 0 ||
-      (cafeteria.servicios &&
-        appliedFilters.servicios.every((serv) => cafeteria.servicios.includes(serv)));
-    return matchCiudad && matchMenu && matchServicios;
+    return !appliedFilters.ciudad || cafeteria.zona === appliedFilters.ciudad;
   });
-
-  // Pagination logic for visible cafeterias
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
-  const visibleCafeterias = filteredCafeterias.slice(startIdx, endIdx);
 
   return (
     <div className="menu-principal">
@@ -164,7 +138,6 @@ const Dashboard = () => {
 
         {/* Barra de filtros */}
         <div className="filter-bar">
-          {/* Zona/Ciudad como select */}
           <select
             value={ciudad}
             onChange={e => setCiudad(e.target.value)}
@@ -174,7 +147,6 @@ const Dashboard = () => {
             ))}
           </select>
 
-          {/* Servicios como dropdown personalizado */}
           <MultiSelectDropdown
             options={opcionesServicios}
             selected={servicios}
@@ -182,7 +154,6 @@ const Dashboard = () => {
             placeholder="Servicios"
           />
 
-          {/* Menú como dropdown multiselección */}
           <MultiSelectDropdown
             options={opcionesMenu}
             selected={menuSeleccionado}
@@ -195,10 +166,8 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Recomendaciones si hay usuario */}
         {user && <Recomendaciones preferencias={appliedFilters} />}
 
-        {/* Modal de detalles de cafetería */}
         {cafeteriaSeleccionada && (
           <CafeteriaModal
             cafeteria={cafeteriaSeleccionada}
@@ -208,42 +177,26 @@ const Dashboard = () => {
 
         {/* Paneles de cafeterías */}
         <div className="card-container">
-          {visibleCafeterias.length === 0 ? (
+          {filteredCafeterias.length === 0 ? (
             <p style={{ width: "100%", textAlign: "center", color: "#a47551", fontWeight: "bold" }}>
               No se encontraron cafeterías.
             </p>
           ) : (
-            visibleCafeterias.map((cafeteria) => (
+            filteredCafeterias.map((cafeteria, idx) => (
               <div
-                key={cafeteria.id}
+                key={cafeteria.nombreCafeteria + idx}
                 className="card"
                 style={{ flex: "1 1 40%", maxWidth: "45%", minWidth: "260px" }}
               >
-                <img src={cafeteria.imagen || "default_image.jpg"} alt={cafeteria.nombre} />
-                <h3>{cafeteria.nombre}</h3>
-                <p>{cafeteria.descripcion}</p>
-                <button onClick={() => setCafeteriaSeleccionada(cafeteria)}>
+                <img src={"default_image.jpg"} alt={cafeteria.nombreCafeteria} />
+                <h3>{cafeteria.nombreCafeteria}</h3>
+                <p>{cafeteria.ubicacion}</p>
+                <Link to={`/cafeteria/${idx + 1}`} className="button">
                   Ver detalles
-                </button>
+                </Link>
               </div>
             ))
           )}
-        </div>
-
-        {/* Paginación */}
-        <div className="pagination">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(filteredCafeterias.length / itemsPerPage) || filteredCafeterias.length === 0}
-          >
-            Siguiente
-          </button>
         </div>
       </div>
     </div>

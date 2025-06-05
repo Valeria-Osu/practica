@@ -1,36 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import '../styles/styles.css'; // Importando el archivo CSS con los estilos globales
+import '../styles/styles.css';
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [nombreUsuario, setNombreUsuario] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // Para manejar errores de login
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     try {
-      // Enviar solicitud POST a la API de backend para verificar las credenciales
-      const response = await fetch('http://localhost:5000/login', {  // Asegúrate de que esta URL sea la de tu backend
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await fetch("https://localhost:44324/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ NombreUsuario: nombreUsuario, Contrasena: password })
       });
 
       const data = await response.json();
 
-      if (response.status === 200) {
-        // Si el login es exitoso, guardar el token en localStorage
-        localStorage.setItem('token', data.token);  // Guarda el token JWT en el localStorage
-
+      if (response.ok && data && data.usuario) {
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+        localStorage.setItem('token', data.token || 'fake-token');
         alert("Inicio de sesión exitoso");
-        navigate("/dashboard"); // Redirigir al Dashboard
+        navigate("/dashboard");
       } else {
-        setError(data.message); // Mostrar mensaje de error si el login falla
+        setError(data.message || "Nombre de usuario o contraseña incorrectos");
       }
     } catch (error) {
       setError("Error al iniciar sesión");
@@ -42,10 +38,10 @@ function Login() {
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleLogin} className="login-form">
         <input
-          type="email"
-          placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Nombre de usuario"
+          value={nombreUsuario}
+          onChange={(e) => setNombreUsuario(e.target.value)}
           className="input-field"
           required
         />
@@ -60,10 +56,8 @@ function Login() {
         <button type="submit" className="submit-button">Entrar</button>
       </form>
 
-      {/* Error de login */}
       {error && <p className="error-message">{error}</p>}
 
-      {/* Enlace a registro */}
       <p className="register-link">
         ¿No tienes cuenta?{" "}
         <Link to="/register" className="link">

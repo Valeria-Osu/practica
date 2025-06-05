@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 const Header = ({ searchQuery, setSearchQuery }) => {
   return (
     <header>
       {/* Logo y título que redirige al Dashboard */}
       <div className="logo" onClick={() => window.location.href = '/'}>
-        <img src={require('../logo.svg')} alt="Logo" />
-        <h1 className="main-title">Catálogo de Cafeterías</h1>
+        <img src={logo} alt="Logo" />
+        <h1 className="main-title">Café Del Desierto</h1>
       </div>
 
       {/* Barra de búsqueda */}

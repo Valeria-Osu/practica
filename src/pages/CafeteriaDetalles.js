@@ -1,186 +1,120 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import Header from "../components/Header.js";
+import { useParams, Link } from "react-router-dom";
+import api from "../config/axios";
 import '../styles/styles.css';
 
 const CafeteriaDetalles = () => {
   const { id } = useParams();
   const [cafeteria, setCafeteria] = useState(null);
-  const [menu, setMenu] = useState([]);
-  const [resenas, setResenas] = useState([]);
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [puntuacion, setPuntuacion] = useState(5);
-  const [comentario, setComentario] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(localStorage.getItem("usuario")) : null;
+  const [menus, setMenus] = useState([]);
+  const [productos, setProductos] = useState([]);
 
   useEffect(() => {
     const fetchCafeteria = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/cafeteria/${id}`, {
-          headers: {
-            "Authorization": token ? `Bearer ${token}` : "",
-          }
-        });
-        const data = await response.json();
-        if (response.status === 200) {
-          setCafeteria(data.cafeteria);
-          setMenu(data.cafeteria.menu);
-          setResenas(data.cafeteria.reseñas);
-        } else {
-          setMensaje("Error al obtener los detalles de la cafetería.");
-        }
-        setLoading(false);
+        const response = await api.get(`/cafeterias/${id}`);
+        setCafeteria(response.data);
       } catch (error) {
         setMensaje("Hubo un error al obtener los detalles de la cafetería.");
+      } finally {
         setLoading(false);
       }
     };
 
     fetchCafeteria();
-  }, [id, token]);
+  }, [id]);
 
-  const handleMostrarFormulario = () => setMostrarFormulario(true);
-
-  const handleEnviarResena = async (e) => {
-    e.preventDefault();
-
-    if (puntuacion < 1 || puntuacion > 5) {
-      alert("La puntuación debe ser entre 1 y 5");
-      return;
-    }
-
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    const nuevaResena = {
-      puntuacion,
-      comentario,
-      usuario: user ? user.nombre : "Desconocido",
-    };
-
-    try {
-      const response = await fetch(`http://localhost:5000/cafeterias/${id}/reseñas`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(nuevaResena),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 200) {
-        setResenas([...resenas, data.resena]);
-        setPuntuacion(5);
-        setComentario("");
-        setMostrarFormulario(false);
-      } else {
-        setMensaje(data.message || "Error al enviar la reseña.");
+  useEffect(() => {
+    const fetchMenusYProductos = async () => {
+      try {
+        const [menusRes, productosRes] = await Promise.all([
+          api.get("/menus"),
+          api.get("/productos"),
+        ]);
+        setMenus(menusRes.data);
+        setProductos(productosRes.data);
+      } catch (error) {
+        // Puedes mostrar un mensaje si lo deseas
       }
-    } catch (error) {
-      setMensaje("Hubo un error al enviar la reseña.");
-    }
-  };
+    };
+    fetchMenusYProductos();
+  }, []);
 
-  if (loading) return <p>Cargando...</p>;
-  if (!cafeteria) return <p>Cafetería no encontrada</p>;
+  if (loading) return <p className="loading-message">Cargando...</p>;
+  if (!cafeteria) return <p className="error-message">Cafetería no encontrada</p>;
+
+  const nombreMenuEsperado = `${cafeteria.nombreCafeteria} Menú`;
+  const menuCafeteria = menus.find(m => m.nombreMenu === nombreMenuEsperado);
+
+  // Filtrar productos del menú por idMenu (relación real)
+  let productosMenu = [];
+  if (menuCafeteria && menuCafeteria.idMenu) {
+    productosMenu = productos.filter(prod => prod.idMenu === menuCafeteria.idMenu);
+  }
 
   return (
-    <div className="cafeteria-detalles-page">
-      <Header />
+    <div className="main-container">
+      <div className="card detalles-card">
+        <div className="detalles-img-panel">
+          {cafeteria.imagenURL && (
+            <img
+              src={cafeteria.imagenURL}
+              alt={cafeteria.nombreCafeteria}
+              className="cafeteria-image"
+            />
+          )}
+        </div>
 
-      <div className="cafeteria-detalles-container">
-        <h2>{cafeteria.nombre}</h2>
-        {cafeteria.imagen && (
-          <img
-            src={cafeteria.imagen}
-            alt={cafeteria.nombre}
-            className="cafeteria-image"
-          />
-        )}
+        <div className="detalles-info-panel">
+          <h2 className="form-title">
+            {cafeteria.nombreCafeteria}
+          </h2>
+          <div className="detalles-info">
+            <p><b>Ubicación:</b> {cafeteria.ubicacion}</p>
+            <p><b>Zona:</b> {cafeteria.zona}</p>
+            <p><b>Descripción:</b> {cafeteria.descripcion}</p>
+            <p><b>Horario:</b> {cafeteria.horarios}</p>
+            <p><b>Servicios:</b> {cafeteria.tipoServicio}</p>
+            <p><b>Teléfono:</b> {cafeteria.telefono}</p>
+            {cafeteria.detalles && <p><b>Detalles adicionales:</b> {cafeteria.detalles}</p>}
+          </div>
+        </div>
+      </div>
 
-        <h3>Menú</h3>
-        <ul className="menu-list">
-          {menu.map((item, index) => (
-            <li key={index}>
-              {item.nombre} - ${item.precio.toFixed(2)}
-            </li>
-          ))}
-        </ul>
-
-        {user?.rol === "admin" && (
-          <p>
-            <Link to={`/cafeteria/${cafeteria.id}/gestion-menu`} className="button">
-              Editar menú
-            </Link>
-          </p>
-        )}
-
-        <h3>Reseñas</h3>
-        {resenas.length > 0 ? (
-          resenas.map((r, index) => (
-            <div key={index} className="review-card">
-              <p><strong>{r.usuario}</strong> - {r.puntuacion}⭐</p>
-              <p>{r.comentario}</p>
-            </div>
-          ))
-        ) : (
-          <p>No hay reseñas aún.</p>
-        )}
-
-        {mensaje && <p className="error-message">{mensaje}</p>}
-
-        {user ? (
+      {/* Panel del menú debajo */}
+      <div className="card menu-panel">
+        <h3 className="menu-title">Menú</h3>
+        {menuCafeteria ? (
           <>
-            <button onClick={handleMostrarFormulario} className="button">
-              Escribir reseña
-            </button>
-
-            {mostrarFormulario && (
-              <form onSubmit={handleEnviarResena} className="review-form">
-                <label>
-                  Puntuación (1 a 5):
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={puntuacion}
-                    onChange={(e) => setPuntuacion(parseInt(e.target.value))}
-                    required
-                  />
-                </label>
-                <label>
-                  Comentario:
-                  <textarea
-                    value={comentario}
-                    onChange={(e) => setComentario(e.target.value)}
-                    rows="4"
-                    required
-                  />
-                </label>
-                <button type="submit" className="button">
-                  Enviar reseña
-                </button>
-              </form>
-            )}
+            {menuCafeteria.descripcion && <p>{menuCafeteria.descripcion}</p>}
+            <div className="productos-menu">
+              {productosMenu.length > 0 ? (
+                <ul className="productos-lista">
+                  {productosMenu.map((prod) => (
+                    <li key={prod.id} className="producto-item">
+                      <span className="producto-nombre">{prod.nombreProducto}</span>
+                      <span className="producto-precio">${prod.precio.toFixed(2)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No hay productos disponibles para este menú.</p>
+              )}
+            </div>
           </>
         ) : (
-          <p>
-            <Link to="/login">Inicia sesión</Link> para dejar una reseña.
-          </p>
+          <p>No hay menú registrado para esta cafetería.</p>
         )}
+      </div>
 
-        <p>
-          <Link to="/">← Volver al catálogo</Link>
-        </p>
+      {/* Mensaje de error y botón de regreso */}
+      <div className="detalles-footer">
+        {mensaje && <p className="error-message">{mensaje}</p>}
+        <Link to="/" className="button">
+          ← Volver al catálogo
+        </Link>
       </div>
     </div>
   );
